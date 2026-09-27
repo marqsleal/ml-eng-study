@@ -105,8 +105,3 @@ Após escolher, aplique `best_estimator_` no teste final uma única vez. Para um
 ## Dependências opcionais
 
 Além da base do projeto, as demonstrações avançadas exigem `scikit-optimize`, `optuna` e `optuna-integration`, listados em `requirements.txt`. O notebook continua executável sem elas: as células avançadas exibem uma instrução de instalação e são ignoradas.
-
-## Referências
-
-- Aurélien Géron, *Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow*, 2ª edição, capítulo 2: validação cruzada, Grid Search, Randomized Search e avaliação final.
-- Documentação oficial do [scikit-learn sobre model selection](https://scikit-learn.org/stable/model_selection.html), [BayesSearchCV](https://scikit-optimize.readthedocs.io/en/stable/modules/bayessearchcv.html) e [Optuna](https://optuna.readthedocs.io/en/stable/).
