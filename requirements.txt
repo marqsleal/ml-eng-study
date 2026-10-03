@@ -7,3 +7,5 @@ jupyterlab
 scikit-optimize
 optuna
 optuna-integration
+fastapi
+uvicorn[standard]

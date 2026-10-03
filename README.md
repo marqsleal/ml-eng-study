@@ -2,6 +2,68 @@
 
 Este repositório reúne uma revisão prática e assertiva dos principais conceitos de ciência de dados usando a biblioteca [scikit-learn](https://scikit-learn.org/). Cada notebook é um módulo independente: ele apresenta o problema, prepara os dados, treina modelos candidatos, avalia resultados e discute os critérios de escolha.
 
+## API de inferência
+
+O pipeline treinado no notebook 005 está persistido em `src/model.pickle`. A aplicação FastAPI em `src/main.py` carrega o arquivo ao iniciar e disponibiliza inferências HTTP.
+
+> Esta API é um exemplo didático baseado no dataset `breast_cancer` do scikit-learn. Ela não substitui avaliação, diagnóstico ou decisão clínica profissional.
+
+### Executar localmente
+
+Instale as dependências específicas da API:
+
+```bash
+pip install -r src/requirements.txt
+```
+
+Em seguida, inicie o servidor com Uvicorn:
+
+```bash
+uvicorn src.main:app --reload
+```
+
+O servidor fica disponível em `http://127.0.0.1:8000`. A documentação interativa está em `http://127.0.0.1:8000/docs`.
+
+### Endpoints
+
+| Método | Rota | Descrição |
+| --- | --- | --- |
+| `GET` | `/health` | Confirma que a API e o modelo foram carregados. |
+| `POST` | `/predict` | Recebe uma observação e retorna a classificação e a probabilidade de malignidade. |
+
+O corpo de `POST /predict` deve ser um objeto JSON cujas chaves sejam exatamente as 31 colunas usadas no treinamento, incluindo `faixa_raio`. Entradas com campos ausentes ou desconhecidos retornam `HTTP 422`.
+
+Exemplo de resposta:
+
+```json
+{
+  "classe": 0,
+  "diagnostico": "benigno",
+  "probabilidade_maligno": 0.04
+}
+```
+
+### Executar com Docker
+
+Na raiz do projeto:
+
+```bash
+docker build -t cancer-api src
+docker run --rm -p 8000:8000 cancer-api
+```
+
+### Testes manuais
+
+Com a API em execução, execute os casos em `scripts/`:
+
+```bash
+bash scripts/001__health.sh
+bash scripts/002__predict_benign.sh
+bash scripts/003__predict_malignant.sh
+```
+
+Cada script aceita opcionalmente a URL-base da API como primeiro argumento, por exemplo: `bash scripts/001__health.sh http://localhost:8000`.
+
 O objetivo não é apenas executar estimadores, mas entender **quando usá-los**, **como os dados influenciam seu desempenho** e **quais métricas sustentam uma decisão**.
 
 O conteúdo usa como base o livro *Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow*, de Aurélien Géron (2ª edição), complementando seus conceitos com demonstrações e anotações próprias deste repositório.
@@ -27,6 +89,8 @@ Em cada notebook, siga a mesma sequência:
 | 002 | [Classificação](notebooks/002__SCIKIT__CLASSIFICATION.ipynb) | Predição de classes, probabilidades e decisão | [Guia de classificação](docs/002__CLASSIFICATION.md) |
 | 003 | [Clusterização](notebooks/003__SCIKIT__CLUSTERING.ipynb) | Agrupamento não supervisionado e segmentação | [Guia de clusterização](docs/003__CLUSTERING.md) |
 | 004 | [Seleção de modelos](notebooks/004__SCIKIT__MODEL_SELECTION.ipynb) | Validação, busca de hiperparâmetros e comparação justa | [Guia de seleção](docs/004__MODEL_SELECTION.md) |
+| 005 | [Treinamento ponta a ponta](notebooks/005__SCIKIT__END_TO_END_PIPELINE.ipynb) | Imputação, codificação, escala, busca de hiperparâmetros e persistência do pipeline | — |
+| 006 | Docker e API | Imagem, container, Dockerfile e execução da API de classificação | [Guia de Docker](docs/006__DOCKER.md) |
 
 ## Paradigmas, modelos e métricas
 
