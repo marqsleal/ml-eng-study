@@ -1,12 +1,47 @@
-# Revisão aplicada de Data Science com scikit-learn
+# Machine Learning: fundamentos, serving e infraestrutura
 
-Este repositório reúne uma revisão prática e assertiva dos principais conceitos de ciência de dados usando a biblioteca [scikit-learn](https://scikit-learn.org/). Cada notebook é um módulo independente: ele apresenta o problema, prepara os dados, treina modelos candidatos, avalia resultados e discute os critérios de escolha.
+Este repositório organiza o estudo de ML como um caminho completo: aprender a construir modelos com [scikit-learn](https://scikit-learn.org/), expô-los por uma API em contêiner e entender a infraestrutura que os mantém reproduzíveis e operáveis em produção.
 
-## API de inferência
+O foco não é apenas executar estimadores. É entender **quando usá-los**, **como os dados influenciam o resultado**, **quais métricas sustentam uma decisão** e **quais componentes tornam o modelo confiável fora do notebook**.
 
-O pipeline treinado no notebook 005 está persistido em `src/model.pickle`. A aplicação FastAPI em `src/main.py` carrega o arquivo ao iniciar e disponibiliza inferências HTTP.
+## Trilhas de estudo
 
-> Esta API é um exemplo didático baseado no dataset `breast_cancer` do scikit-learn. Ela não substitui avaliação, diagnóstico ou decisão clínica profissional.
+| Trilha | Objetivo | Comece por |
+| --- | --- | --- |
+| 1. [scikit-learn](#1-fundamentos-e-prática-com-scikit-learn) | Preparar dados, treinar, validar, comparar e interpretar modelos. | [Processamento de dados](notebooks/000__SCIKIT__DATA_PROCESSING.ipynb) |
+| 2. [Docker e serving](#2-serving-do-modelo-com-fastapi-e-docker) | Persistir o pipeline e disponibilizar inferência HTTP em contêiner. | [Guia de Docker](docs/006__DOCKER.md) |
+| 3. [Infraestrutura de ML](#3-infraestrutura-e-aws-well-architected-machine-learning-lens) | Compreender o ciclo de vida, dados, governança, automação e observabilidade de ML. | [Trilha de infraestrutura](ml-well-architected/README.md) |
+
+## 1. Fundamentos e prática com scikit-learn
+
+### Como estudar os módulos
+
+Em cada notebook, siga a mesma sequência:
+
+1. Defina o tipo de problema e a variável-alvo (quando houver).
+2. Faça uma análise exploratória breve e identifique a natureza das features.
+3. Separe treino e teste antes de qualquer ajuste aprendido nos dados.
+4. Aplique o pré-processamento necessário usando apenas os dados de treino para ajustar transformadores.
+5. Compare uma baseline simples com modelos mais flexíveis.
+6. Avalie com métricas adequadas ao objetivo do problema e validação cruzada.
+7. Interprete erros, limitações e o impacto das features nos resultados.
+
+### Módulos e notebooks
+
+| Módulo | Notebook | Foco | Documentação complementar |
+| --- | --- | --- | --- |
+| 000 | [Processamento de dados](notebooks/000__SCIKIT__DATA_PROCESSING.ipynb) | Divisão de dados, imputação, escalonamento, codificação e features | [Guia de processamento](docs/000__DATA_PROCESSING.md) |
+| 001 | [Regressão](notebooks/001__SCIKIT__REGRESSION.ipynb) | Predição de valores numéricos contínuos | [Guia de regressão](docs/001__REGRESSION.md) |
+| 002 | [Classificação](notebooks/002__SCIKIT__CLASSIFICATION.ipynb) | Predição de classes, probabilidades e decisão | [Guia de classificação](docs/002__CLASSIFICATION.md) |
+| 003 | [Clusterização](notebooks/003__SCIKIT__CLUSTERING.ipynb) | Agrupamento não supervisionado e segmentação | [Guia de clusterização](docs/003__CLUSTERING.md) |
+| 004 | [Seleção de modelos](notebooks/004__SCIKIT__MODEL_SELECTION.ipynb) | Validação, busca de hiperparâmetros e comparação justa | [Guia de seleção](docs/004__MODEL_SELECTION.md) |
+| 005 | [Treinamento ponta a ponta](notebooks/005__SCIKIT__END_TO_END_PIPELINE.ipynb) | Imputação, codificação, escala, busca de hiperparâmetros e persistência do pipeline | — |
+
+## 2. Serving do modelo com FastAPI e Docker
+
+O notebook 005 persiste o pipeline treinado em `src/model.pickle`. A aplicação FastAPI em `src/main.py` carrega esse artefato ao iniciar e disponibiliza inferências HTTP. Esta trilha mostra a passagem do experimento reproduzível para um serviço executável — ainda em escopo didático. Consulte o [guia de Docker](docs/006__DOCKER.md) para a explicação da imagem, do contêiner e do Dockerfile.
+
+> A API usa o dataset `breast_cancer` do scikit-learn. Ela não substitui avaliação, diagnóstico ou decisão clínica profissional.
 
 ### Executar localmente
 
@@ -64,37 +99,17 @@ bash scripts/003__predict_malignant.sh
 
 Cada script aceita opcionalmente a URL-base da API como primeiro argumento, por exemplo: `bash scripts/001__health.sh http://localhost:8000`.
 
-O objetivo não é apenas executar estimadores, mas entender **quando usá-los**, **como os dados influenciam seu desempenho** e **quais métricas sustentam uma decisão**.
+## 3. Infraestrutura e AWS Well-Architected Machine Learning Lens
 
-O conteúdo usa como base o livro *Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow*, de Aurélien Géron (2ª edição), complementando seus conceitos com demonstrações e anotações próprias deste repositório.
+A trilha de [infraestrutura de ML](ml-well-architected/README.md) complementa os notebooks e a API com a arquitetura necessária para levar um modelo a produção. Ela segue o diagrama do *AWS Well-Architected Machine Learning Lens* e separa responsabilidades de dados, modelo, implantação e observabilidade. O material apresenta primeiro decisões de arquitetura; os serviços AWS aparecem como opções de implementação justificadas, não como pré-requisito.
 
-## Como estudar os módulos
+O ponto de partida é [Coleta de dados](ml-well-architected/001__DATA_COLLECTION.md), que relaciona **Collect Data** do diagrama a SoR/SoT/SPEC, padrão medallion e recursos como Amazon S3, AWS Glue, AWS DMS, Amazon Kinesis, Lake Formation, Ground Truth e Macie.
 
-Em cada notebook, siga a mesma sequência:
+## Guia de consulta: scikit-learn
 
-1. Defina o tipo de problema e a variável-alvo (quando houver).
-2. Faça uma análise exploratória breve e identifique a natureza das features.
-3. Separe treino e teste antes de qualquer ajuste aprendido nos dados.
-4. Aplique o pré-processamento necessário usando apenas os dados de treino para ajustar transformadores.
-5. Compare uma baseline simples com modelos mais flexíveis.
-6. Avalie com métricas adequadas ao objetivo do problema e validação cruzada.
-7. Interprete erros, limitações e o impacto das features nos resultados.
+### Paradigmas, modelos e métricas
 
-## Módulos
-
-| Módulo | Notebook | Foco | Documentação complementar |
-| --- | --- | --- | --- |
-| 000 | [Processamento de dados](notebooks/000__SCIKIT__DATA_PROCESSING.ipynb) | Divisão de dados, imputação, escalonamento, codificação e features | [Guia de processamento](docs/000__DATA_PROCESSING.md) |
-| 001 | [Regressão](notebooks/001__SCIKIT__REGRESSION.ipynb) | Predição de valores numéricos contínuos | [Guia de regressão](docs/001__REGRESSION.md) |
-| 002 | [Classificação](notebooks/002__SCIKIT__CLASSIFICATION.ipynb) | Predição de classes, probabilidades e decisão | [Guia de classificação](docs/002__CLASSIFICATION.md) |
-| 003 | [Clusterização](notebooks/003__SCIKIT__CLUSTERING.ipynb) | Agrupamento não supervisionado e segmentação | [Guia de clusterização](docs/003__CLUSTERING.md) |
-| 004 | [Seleção de modelos](notebooks/004__SCIKIT__MODEL_SELECTION.ipynb) | Validação, busca de hiperparâmetros e comparação justa | [Guia de seleção](docs/004__MODEL_SELECTION.md) |
-| 005 | [Treinamento ponta a ponta](notebooks/005__SCIKIT__END_TO_END_PIPELINE.ipynb) | Imputação, codificação, escala, busca de hiperparâmetros e persistência do pipeline | — |
-| 006 | Docker e API | Imagem, container, Dockerfile e execução da API de classificação | [Guia de Docker](docs/006__DOCKER.md) |
-
-## Paradigmas, modelos e métricas
-
-### Regressão
+#### Regressão
 
 Use regressão quando o alvo é um número contínuo, como preço, demanda, duração ou temperatura.
 
@@ -110,7 +125,7 @@ Use regressão quando o alvo é um número contínuo, como preço, demanda, dura
 - **RMSE**: penaliza erros grandes; prefira quando grandes desvios são especialmente custosos.
 - **R²**: proporção de variação explicada em relação a uma baseline que prevê a média; não use isoladamente.
 
-### Classificação
+#### Classificação
 
 Use classificação quando o alvo representa categorias, como fraude/não fraude, espécie, diagnóstico ou faixa de risco.
 
@@ -130,7 +145,7 @@ Use classificação quando o alvo representa categorias, como fraude/não fraude
 - **ROC-AUC**: capacidade de ordenar as classes em diversos limiares; pode parecer otimista com classes muito desbalanceadas.
 - **PR-AUC**: mais informativa para classe positiva rara. Sempre complemente com matriz de confusão e escolha explícita do limiar.
 
-### Clusterização
+#### Clusterização
 
 Use clusterização quando não há alvo e o objetivo é descobrir segmentos, padrões ou grupos semelhantes. Resultados não são "verdades": devem ser validados pela métrica, pela estabilidade e pelo contexto de negócio.
 
@@ -145,7 +160,7 @@ Use clusterização quando não há alvo e o objetivo é descobrir segmentos, pa
 
 Em resumo: o **cotovelo** mostra o ganho marginal de adicionar clusters e é específico do `KMeans`; a **silhouette** mede qualidade relativa da separação e pode avaliar tanto `KMeans` quanto `DBSCAN` (desconsiderando os pontos de ruído, rotulados como `-1`). A escolha final deve considerar as duas análises, o tamanho útil dos grupos e a interpretação no domínio.
 
-## Features e pré-processamento
+### Features e pré-processamento
 
 | Tipo de feature/situação | Preparação recomendada | Modelos mais sensíveis |
 | --- | --- | --- |
@@ -160,7 +175,7 @@ Em resumo: o **cotovelo** mostra o ganho marginal de adicionar clusters e é esp
 
 Em geral, modelos lineares são bons para relações lineares e interpretação; árvores e ensembles capturam não linearidades e interações sem exigir escala; métodos baseados em distância e margem dependem fortemente de escala e representação; e modelos de *boosting* frequentemente se destacam em dados tabulares, mas pedem validação e ajuste cuidadosos.
 
-## Seleção e comparação justa
+### Seleção e comparação justa
 
 - Use `train_test_split(..., stratify=y)` em classificação, quando aplicável; reserve o teste final para a avaliação definitiva.
 - Aplique `cross_val_score`/`cross_validate` ou `GridSearchCV`/`RandomizedSearchCV` no conjunto de treino.
@@ -170,7 +185,7 @@ Em geral, modelos lineares são bons para relações lineares e interpretação;
 - Ajuste hiperparâmetros após definir a métrica-alvo; para uma estimativa menos enviesada após muitas tentativas, use validação cruzada aninhada quando o custo permitir.
 - Priorize o modelo mais simples que atenda ao objetivo de negócio, incluindo latência, interpretabilidade e estabilidade, não apenas a maior métrica.
 
-## Baseline e interpretação do modelo
+### Baseline e interpretação do modelo
 
 Uma **baseline** é a referência mínima que um modelo precisa superar para ser útil. Ela estabelece se a complexidade do modelo está realmente adicionando valor.
 
@@ -193,6 +208,9 @@ SHAP é complementar, não uma prova de causalidade: suas explicações descreve
 ```text
 notebooks/  # demonstrações executáveis por paradigma
 docs/       # explicações, referências e decisões complementares de cada módulo
+src/        # API FastAPI, artefato do modelo e Dockerfile
+scripts/    # verificações manuais da API
+ml-well-architected/  # trilha de infraestrutura e AWS Well-Architected ML Lens
 ```
 
-As referências conceituais, detalhes de implementação e anotações adicionais de cada assunto devem ser mantidos em `docs/`; os notebooks devem privilegiar demonstrações reproduzíveis e a discussão dos resultados observados.
+Os notebooks privilegiam demonstrações reproduzíveis e discussão de resultados. Os detalhes conceituais de scikit-learn ficam em `docs/`; a documentação de arquitetura, governança e operação de ML fica isolada em `ml-well-architected/`.
